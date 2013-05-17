@@ -52,6 +52,10 @@ public final class ODEntityListener implements Listener {
         if (((event == null) || (event.isCancelled())) && (!this.config.getIgnoreCancel())) {
             return;
         }
+        
+        if (this.config.getDisabledWorlds().contains(event.getLocation().getWorld().getName())) {
+        	return;
+        }
 
         int radius = this.config.getRadius();
 
@@ -109,7 +113,7 @@ public final class ODEntityListener implements Listener {
         }
         
         if (config.getExplodeInLiquids())
-        	UnderWaterExplosions.Handle(event, this.plugin);
+        	ExplosionsInLiquid.Handle(event, this.plugin);
 
         for (int x = -radius; x <= radius; x++)
             for (int y = -radius; y <= radius; y++)
@@ -287,12 +291,11 @@ public final class ODEntityListener implements Listener {
 
         // EXPERIMENTAL: Some safety just in case the server is running low on memory.
         // This will prevent a new timer from being created. However, durability will not regenerate
-        if (config.getDurabilityTimerSafey())
-        {
+        if (config.getDurabilityTimerSafey()) {
             if (((float) Runtime.getRuntime().freeMemory() + (1024 * 1024 * config.getMinFreeMemoryLimit())) >= Runtime.getRuntime().maxMemory()) {
                 if (DisplayWarning) {
-                    plugin.LOG.info("Server Memory: " + ((Runtime.getRuntime().freeMemory() / 1024) / 1024) + "MB free out of " + ((Runtime.getRuntime().maxMemory() / 1024) / 1024) + "MB available.");
-                    plugin.LOG.info("Server is running low on resources.. Let's not start a new timer, there are " + this.obsidianTimer.size() + " other timers running!");
+                    ObsidianDestroyer.LOG.info("Server Memory: " + ((Runtime.getRuntime().freeMemory() / 1024) / 1024) + "MB free out of " + ((Runtime.getRuntime().maxMemory() / 1024) / 1024) + "MB available.");
+                    ObsidianDestroyer.LOG.info("Server is running low on resources.. Let's not start a new timer, there are " + this.obsidianTimer.size() + " other timers running!");
                     DisplayWarning = false;
                 }
                 return;
